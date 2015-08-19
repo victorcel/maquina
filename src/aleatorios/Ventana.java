@@ -9,10 +9,12 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.io.File;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javazoom.jlgui.basicplayer.BasicPlayer;
 
 /**
  *
@@ -29,9 +31,9 @@ public class Ventana extends javax.swing.JFrame {
     int gana;
     int alea;
     Image icon;
-    
+
     public Ventana() {
-        
+
         initComponents();
         icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/imagenes/favicon.png"));
         setIconImage(icon);
@@ -262,11 +264,11 @@ public class Ventana extends javax.swing.JFrame {
             20404};
         estado = false;
     }
-    
+
     public void ale() {
         hilo = new Thread(new Runnable() {
             Random rnd = new Random();
-            
+
             @Override
             public void run() {
                 for (int i = 0; i < 1000; i++) {
@@ -276,14 +278,14 @@ public class Ventana extends javax.swing.JFrame {
                         if (gana != alea) {
                             numero.setText("" + alea);
                         }
-                        
+
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }
         });
-        
+
     }
 
     /**
@@ -304,6 +306,7 @@ public class Ventana extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         selecionar = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         area = new javax.swing.JTextArea();
@@ -319,8 +322,8 @@ public class Ventana extends javax.swing.JFrame {
         jpanelGanador.setRequestFocusEnabled(false);
         jpanelGanador.setVerifyInputWhenFocusTarget(false);
 
-        ganagana.setFont(new java.awt.Font("Viner Hand ITC", 1, 48)); // NOI18N
-        ganagana.setForeground(new java.awt.Color(255, 0, 153));
+        ganagana.setFont(new java.awt.Font("Bradley Hand ITC", 1, 48)); // NOI18N
+        ganagana.setForeground(new java.awt.Color(153, 0, 153));
         ganagana.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         ganagana.setText(" ");
 
@@ -367,22 +370,24 @@ public class Ventana extends javax.swing.JFrame {
         jPanel2.setBackground(new java.awt.Color(0, 51, 102));
 
         detener.setBackground(new java.awt.Color(204, 204, 0));
-        detener.setText("Buscar numero");
+        detener.setFont(new java.awt.Font("Batang", 0, 11)); // NOI18N
+        detener.setText("Generar Número");
         detener.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 detenerActionPerformed(evt);
             }
         });
 
-        numero.setFont(new java.awt.Font("Viner Hand ITC", 0, 100)); // NOI18N
-        numero.setForeground(new java.awt.Color(255, 0, 153));
+        numero.setFont(new java.awt.Font("Batang", 0, 100)); // NOI18N
+        numero.setForeground(new java.awt.Color(255, 255, 255));
         numero.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
-        jLabel2.setFont(new java.awt.Font("Viner Hand ITC", 1, 80)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 0, 153));
+        jLabel2.setFont(new java.awt.Font("Batang", 1, 80)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("No. Maquina Seleccionada");
+        jLabel2.setText("No. Máquina Seleccionada");
 
+        selecionar.setFont(new java.awt.Font("Batang", 0, 11)); // NOI18N
         selecionar.setText("Seleccionar");
         selecionar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -392,21 +397,25 @@ public class Ventana extends javax.swing.JFrame {
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/nao.png"))); // NOI18N
 
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/nao.png"))); // NOI18N
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(84, 84, 84)
+                .addGap(92, 92, 92)
                 .addComponent(jLabel1)
-                .addGap(168, 168, 168)
+                .addGap(160, 160, 160)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(detener, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
+                        .addComponent(detener, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
                         .addGap(41, 41, 41)
-                        .addComponent(selecionar, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE))
+                        .addComponent(selecionar, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
                     .addComponent(numero, javax.swing.GroupLayout.PREFERRED_SIZE, 361, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(566, 566, 566))
+                .addGap(172, 172, 172)
+                .addComponent(jLabel5)
+                .addGap(216, 216, 216))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 1136, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -426,9 +435,11 @@ public class Ventana extends javax.swing.JFrame {
                             .addComponent(detener, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(selecionar, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(29, Short.MAX_VALUE))
         );
 
@@ -443,31 +454,32 @@ public class Ventana extends javax.swing.JFrame {
         area.setEditable(false);
         area.setBackground(new java.awt.Color(0, 51, 102));
         area.setColumns(5);
-        area.setFont(new java.awt.Font("Viner Hand ITC", 0, 80)); // NOI18N
-        area.setForeground(new java.awt.Color(255, 0, 153));
+        area.setFont(new java.awt.Font("Batang", 0, 80)); // NOI18N
+        area.setForeground(new java.awt.Color(255, 255, 255));
         area.setLineWrap(true);
         area.setRows(5);
         area.setWrapStyleWord(true);
         area.setAutoscrolls(false);
+        area.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 255, 255), 1, true));
         area.setFocusable(false);
         area.setRequestFocusEnabled(false);
         area.setVerifyInputWhenFocusTarget(false);
         jScrollPane2.setViewportView(area);
 
-        ganador.setFont(new java.awt.Font("Viner Hand ITC", 1, 50)); // NOI18N
-        ganador.setForeground(new java.awt.Color(255, 0, 153));
+        ganador.setFont(new java.awt.Font("Batang", 1, 50)); // NOI18N
+        ganador.setForeground(new java.awt.Color(255, 255, 255));
         ganador.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        ganador.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 0, 153), 2, true));
+        ganador.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 255, 255), 2, true));
 
-        jLabel3.setFont(new java.awt.Font("Viner Hand ITC", 1, 50)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 0, 153));
+        jLabel3.setFont(new java.awt.Font("Batang", 1, 50)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("No. Jugados");
+        jLabel3.setText("# Jugados");
 
-        jLabel4.setFont(new java.awt.Font("Viner Hand ITC", 1, 50)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 0, 153));
+        jLabel4.setFont(new java.awt.Font("Batang", 1, 50)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("Maquina Ganadora");
+        jLabel4.setText("Máquina Ganadora");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -528,7 +540,7 @@ public class Ventana extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(64, 64, 64))
         );
@@ -539,7 +551,7 @@ public class Ventana extends javax.swing.JFrame {
     private void detenerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detenerActionPerformed
         if (detener.isSelected()) {
             if (!estado) {
-                
+
                 hilo.start();
 
                 // hilo.stop();
@@ -548,7 +560,7 @@ public class Ventana extends javax.swing.JFrame {
                 estado = false;
                 detener.setText("Detener");
                 selecionar.setEnabled(false);
-                
+
             }
         } else {
             detener.setText("Continuar");
@@ -557,12 +569,12 @@ public class Ventana extends javax.swing.JFrame {
             area.append(" \n" + alea);
             estado = true;
         }
-        
+
 
     }//GEN-LAST:event_detenerActionPerformed
 
     private void selecionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selecionarActionPerformed
-        
+
         dialogoGanador.setVisible(true);
         dialogoGanador.setSize(508, 408);
         dialogoGanador.setMaximumSize(new Dimension(getWidth(), getHeight()));
@@ -570,9 +582,27 @@ public class Ventana extends javax.swing.JFrame {
         dialogoGanador.setLocationRelativeTo(null);
         ganador.setText("" + numero.getText());
         ganagana.setText("" + numero.getText());
-        
+        reproduciraudio("musica/Aplausos.mp3");
 
     }//GEN-LAST:event_selecionarActionPerformed
+    public void reproduciraudio(String file) {
+
+        try {
+
+            BasicPlayer sonido = new BasicPlayer();
+
+            sonido.open(new File(file));
+
+            sonido.play();
+           
+
+        } catch (Exception e) {
+
+            System.out.println(e);
+
+        }
+
+    }
 
     /**
      * @param args the command line arguments
@@ -619,6 +649,7 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane2;
