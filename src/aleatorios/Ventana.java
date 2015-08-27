@@ -5,15 +5,21 @@
  */
 package aleatorios;
 
+import com.sun.org.apache.xerces.internal.impl.dtd.models.CMAny;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javazoom.jlgui.basicplayer.BasicPlayer;
 
 /**
@@ -30,262 +36,92 @@ public class Ventana extends javax.swing.JFrame {
     int ranm[];
     int gana;
     int alea;
+    Vector numeros;
     Image icon;
-
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+    ConexionMysql cm = new ConexionMysql();
+    String dato;
+    String resultado;
+    Thread tInicio;
+    int numeroDeJugadores;
+    
     public Ventana() {
-
+        
         initComponents();
         icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/imagenes/favicon.png"));
         setIconImage(icon);
         setExtendedState(MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
-        Panel p = new Panel("/imagenes/Ganador.jpg");
-        jpanelGanador.add(p);
         selecionar.setEnabled(false);
-        ale();
-        ranm = new int[]{10101,
-            10102, 10201,
-            10202,
-            10301,
-            10302,
-            10303,
-            10304,
-            10305,
-            10306,
-            10307,
-            10308,
-            10401,
-            10402,
-            10403,
-            10404,
-            10501,
-            10502,
-            10503,
-            10504,
-            10601,
-            10602,
-            10603,
-            10604,
-            10701,
-            10702,
-            10703,
-            10704,
-            10801,
-            10802,
-            10803,
-            10804,
-            10805,
-            10806,
-            10807,
-            10808,
-            10809,
-            10810,
-            10901,
-            10902,
-            10903,
-            10904,
-            11001,
-            11002,
-            11003,
-            11004,
-            11005,
-            11006,
-            11007,
-            11101,
-            11102,
-            11103,
-            11104,
-            11105,
-            11106,
-            11107,
-            11108,
-            11109,
-            11110,
-            11201,
-            11202,
-            11203,
-            11204,
-            11205,
-            11206,
-            11301,
-            11302,
-            11303,
-            11304,
-            11305,
-            11401,
-            11402,
-            11403,
-            11404,
-            11501,
-            11502,
-            11503,
-            11504,
-            11601,
-            11602,
-            11603,
-            11604,
-            11605,
-            11606,
-            11701,
-            11702,
-            11703,
-            11704,
-            11801,
-            11802,
-            11803,
-            11804,
-            11805,
-            11806,
-            11807,
-            11808,
-            11809,
-            11810,
-            11811,
-            11812,
-            11813,
-            11814,
-            11901,
-            11902,
-            11903,
-            11904,
-            11905,
-            11906,
-            11907,
-            11908,
-            12001,
-            12002,
-            12003,
-            12004,
-            12005,
-            12006,
-            12007,
-            12008,
-            12101,
-            12102,
-            12103,
-            12104,
-            12105,
-            12106,
-            12107,
-            12108,
-            12201,
-            12202,
-            12203,
-            12204,
-            12205,
-            12206,
-            12207,
-            12301,
-            12302,
-            12303,
-            12304,
-            12305,
-            12306,
-            12307,
-            12308,
-            12401,
-            12402,
-            12403,
-            12404,
-            12501,
-            12502,
-            12503,
-            12504,
-            12601,
-            12602,
-            12603,
-            12604,
-            12701,
-            12702,
-            12703,
-            12704,
-            12705,
-            12706,
-            12707,
-            12708,
-            12709,
-            12710,
-            12801,
-            12802,
-            12803,
-            12804,
-            12805,
-            12806,
-            12807,
-            12808,
-            12809,
-            12810,
-            12811,
-            12901,
-            12902,
-            12903,
-            12904,
-            12905,
-            12906,
-            13001,
-            13002,
-            13003,
-            13004,
-            13005,
-            13006,
-            13101,
-            13102,
-            13103,
-            13104,
-            13105,
-            13106,
-            13201,
-            13202,
-            13203,
-            13204,
-            13205,
-            13206,
-            20101,
-            20102,
-            20103,
-            20104,
-            20105,
-            20106,
-            20107,
-            20108,
-            20109,
-            20110,
-            20201,
-            20202,
-            20203,
-            20204,
-            20301,
-            20302,
-            20303,
-            20304,
-            20401,
-            20402,
-            20403,
-            20404};
+        selecionar.setVisible(false);
+        detener.setVisible(false);
+        inicio();
+        
         estado = false;
     }
-
+    
     public void ale() {
+        cm.conectar();
+        
         hilo = new Thread(new Runnable() {
+            
             Random rnd = new Random();
-
+            
             @Override
             public void run() {
-                for (int i = 0; i < 1000; i++) {
+                ResultSet cont = cm.Consultar("SELECT count(*) as num FROM fecha_maquina WHERE fecha = '" + resultado + "' ");
+                try {
+                    if (cont.next()) {
+                        
+                        numeroDeJugadores = cont.getInt("num");
+                        System.out.println("Numero " + cont.getInt("num"));
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                ranm = new int[numeroDeJugadores];
+                
+                ResultSet rs = cm.Consultar("SELECT maquina FROM fecha_maquina WHERE fecha = '" + resultado + "' ");
+                try {
+                    int n = 0;
+                    while (rs.next()) {
+                        
+                        
+                            ranm [n]= rs.getInt("maquina");
+                       n+=1;
+                        System.out.println(" maquina " + rs.getInt("maquina"));
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                alea = rnd.nextInt(numeroDeJugadores);
+              
+                    
+                   // System.err.println("Ma "+s);
+               
+//                for (int i = 0; i < numeroDeJugadores; i++) {
+//                    alea = rnd.nextInt(numeroDeJugadores);
                     try {
                         Thread.sleep(50);
-                        alea = ranm[rnd.nextInt(220)];
-                        if (gana != alea) {
-                            numero.setText("" + alea);
-                        }
+                        
+//                        alea = rnd.nextInt(220);
+                        //if (gana != alea) {
+                       
+                          numero.setText("" + ranm[alea]);
+                           ganador.setText(""+ranm[alea]);
+                        
+                        
+                            //numero.setText("");
+                        //  }
 
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-            }
+                
+            
         });
-
+        
     }
 
     /**
@@ -322,7 +158,7 @@ public class Ventana extends javax.swing.JFrame {
         jpanelGanador.setRequestFocusEnabled(false);
         jpanelGanador.setVerifyInputWhenFocusTarget(false);
 
-        ganagana.setFont(new java.awt.Font("Bradley Hand ITC", 1, 48)); // NOI18N
+        ganagana.setFont(new java.awt.Font("Britannic Bold", 1, 36)); // NOI18N
         ganagana.setForeground(new java.awt.Color(153, 0, 153));
         ganagana.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         ganagana.setText(" ");
@@ -339,9 +175,9 @@ public class Ventana extends javax.swing.JFrame {
         jpanelGanadorLayout.setVerticalGroup(
             jpanelGanadorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpanelGanadorLayout.createSequentialGroup()
-                .addContainerGap(215, Short.MAX_VALUE)
+                .addContainerGap(206, Short.MAX_VALUE)
                 .addComponent(ganagana, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(84, 84, 84))
+                .addGap(93, 93, 93))
         );
 
         javax.swing.GroupLayout dialogoGanadorLayout = new javax.swing.GroupLayout(dialogoGanador.getContentPane());
@@ -404,43 +240,45 @@ public class Ventana extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(92, 92, 92)
-                .addComponent(jLabel1)
-                .addGap(160, 160, 160)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(detener, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
-                        .addGap(41, 41, 41)
-                        .addComponent(selecionar, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
-                    .addComponent(numero, javax.swing.GroupLayout.PREFERRED_SIZE, 361, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(172, 172, 172)
-                .addComponent(jLabel5)
-                .addGap(216, 216, 216))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 1136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(55, 55, 55)
+                        .addComponent(jLabel1)
+                        .addGap(219, 219, 219)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(detener, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
+                                .addGap(41, 41, 41)
+                                .addComponent(selecionar, javax.swing.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE))
+                            .addComponent(numero, javax.swing.GroupLayout.PREFERRED_SIZE, 361, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(217, 217, 217)
+                        .addComponent(jLabel5)
+                        .addGap(45, 45, 45))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 1136, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(54, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(26, 26, 26)
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(numero, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(detener, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(selecionar, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(29, Short.MAX_VALUE))
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(41, 41, 41))
         );
 
         jPanel3.setBackground(new java.awt.Color(0, 51, 102));
@@ -474,7 +312,7 @@ public class Ventana extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Batang", 1, 50)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("# Jugados");
+        jLabel3.setText("# Ganadores");
 
         jLabel4.setFont(new java.awt.Font("Batang", 1, 50)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
@@ -486,42 +324,40 @@ public class Ventana extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(67, 67, 67)
+                .addGap(61, 61, 61)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(303, 303, 303)
-                .addComponent(ganador, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(309, 309, 309)
+                        .addComponent(ganador, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(169, 169, 169)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 548, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
                     .addGap(48, 48, 48)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 338, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap(1001, Short.MAX_VALUE)))
-            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                    .addContainerGap(577, Short.MAX_VALUE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 548, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(262, 262, 262)))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(129, 129, 129)
-                .addComponent(ganador, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(53, 53, 53)
+                        .addComponent(jLabel4)
+                        .addGap(18, 18, 18)
+                        .addComponent(ganador, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(78, 78, 78)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 376, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(106, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
                     .addGap(21, 21, 21)
                     .addComponent(jLabel3)
-                    .addContainerGap(410, Short.MAX_VALUE)))
-            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel3Layout.createSequentialGroup()
-                    .addGap(21, 21, 21)
-                    .addComponent(jLabel4)
-                    .addContainerGap(410, Short.MAX_VALUE)))
+                    .addContainerGap(355, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -529,29 +365,67 @@ public class Ventana extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(64, 64, 64))
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public void inicio() {
+        
+        tInicio = new Thread(new Runnable() {
+            
+            @Override
+            public void run() {
+                cm.conectar();
+                while (true) {
+                    try {
+                        Thread.sleep(1000);
+                        Date fecha = new Date();
+                        dato = sdf.format(fecha);
+                        ResultSet resl = cm.Consultar("SELECT fecha FROM fecha_maquina WHERE fecha=\"" + dato + "\"");
+                        while (resl.next()) {
+                            resultado = sdf.format(resl.getTimestamp("fecha"));
+                            System.err.println("" + dato + " " + resultado);
+                            
+                        }
+                        if (dato.equals(resultado)) {
+                            // JOptionPane.showMessageDialog(null, "Corriendo");
+                            System.out.println("Prueba");
+                            ale();
+                            hilo.start();
+                            
+                        }
+                        System.err.println("R " + resultado);
+                        
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    // cm.desconectar();
+                }
+                
+            }
+        });
+        tInicio.start();
+    }
     private void detenerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detenerActionPerformed
         if (detener.isSelected()) {
             if (!estado) {
-
+                
                 hilo.start();
 
                 // hilo.stop();
@@ -560,7 +434,7 @@ public class Ventana extends javax.swing.JFrame {
                 estado = false;
                 detener.setText("Detener");
                 selecionar.setEnabled(false);
-
+                
             }
         } else {
             detener.setText("Continuar");
@@ -569,12 +443,13 @@ public class Ventana extends javax.swing.JFrame {
             area.append(" \n" + alea);
             estado = true;
         }
-
+        
 
     }//GEN-LAST:event_detenerActionPerformed
 
     private void selecionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selecionarActionPerformed
-
+        Panel p = new Panel("/imagenes/Ganador.jpg");
+        jpanelGanador.add(p);
         dialogoGanador.setVisible(true);
         dialogoGanador.setSize(508, 408);
         dialogoGanador.setMaximumSize(new Dimension(getWidth(), getHeight()));
@@ -582,26 +457,27 @@ public class Ventana extends javax.swing.JFrame {
         dialogoGanador.setLocationRelativeTo(null);
         ganador.setText("" + numero.getText());
         ganagana.setText("" + numero.getText());
-        reproduciraudio("musica/Aplausos.mp3");
+        
+        reproduciraudio("C:/musica/Aplausos.mp3");
+        
 
     }//GEN-LAST:event_selecionarActionPerformed
     public void reproduciraudio(String file) {
-
+        
         try {
-
+            
             BasicPlayer sonido = new BasicPlayer();
-
+            
             sonido.open(new File(file));
-
+            
             sonido.play();
-           
-
+            
         } catch (Exception e) {
-
+            
             System.out.println(e);
-
+            
         }
-
+        
     }
 
     /**
